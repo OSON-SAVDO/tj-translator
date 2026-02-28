@@ -3,263 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Translator Pro</title>
+    <title>AI Тарҷумон TJ</title>
     <style>
-        :root {
-            --primary: #1a73e8;
-            --bg: #f8f9fa;
-            --card: #ffffff;
-            --text: #3c4043;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Панели боло */
-        .header {
-            width: 100%;
-            max-width: 500px;
-            background: var(--card);
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-sizing: border-box;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        select {
-            border: none;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--primary);
-            background: none;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .swap-btn {
-            font-size: 22px;
-            background: none;
-            border: none;
-            color: #5f6368;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        /* Контейнери асосӣ */
-        .container {
-            width: 95%;
-            max-width: 500px;
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .card {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 1px 2px rgba(60,64,67,0.3);
-        }
-
-        textarea {
-            width: 100%;
-            height: 140px;
-            border: none;
-            resize: none;
-            font-size: 18px;
-            outline: none;
-            font-family: inherit;
-            color: #202124;
-        }
-
-        .output-box {
-            min-height: 140px;
-            font-size: 18px;
-            color: var(--primary);
-            line-height: 1.6;
-            word-wrap: break-word;
-        }
-
-        /* Тугмаҳои иловагӣ */
-        .actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 10px;
-            border-top: 1px solid #f1f3f4;
-            padding-top: 10px;
-        }
-
-        .btn-icon {
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: #5f6368;
-            padding: 8px;
-            border-radius: 50%;
-            transition: 0.2s;
-        }
-
-        .btn-icon:active { background: #f1f3f4; }
-
-        .btn-main {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-
-        .recording {
-            color: #d93025;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse { 50% { opacity: 0.5; } }
+        :root { --primary: #007bff; --bg: #f8f9fa; }
+        body { font-family: sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; width: 100%; max-width: 400px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        select, textarea { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #result { margin-top: 15px; padding: 15px; background: #eee; border-radius: 8px; min-height: 50px; color: #333; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <select id="langFrom">
-            <option value="Tajik">Тоҷикӣ</option>
-            <option value="Russian">Русӣ</option>
-            <option value="English">English</option>
-            <option value="Turkish">Туркӣ</option>
-            <option value="German">Олмонӣ</option>
-        </select>
+<div class="card">
+    <h2 style="text-align:center;">✨ AI Тарҷумон</h2>
+    
+    <select id="lFrom">
+        <option value="English">English</option>
+        <option value="Russian">Русский</option>
+        <option value="Tajik">Тоҷикӣ</option>
+    </select>
 
-        <button class="swap-btn" onclick="swapLanguages()">⇄</button>
+    <textarea id="inputText" rows="4" placeholder="Матнро нависед..."></textarea>
 
-        <select id="langTo">
-            <option value="Russian">Русӣ</option>
-            <option value="Tajik">Тоҷикӣ</option>
-            <option value="English" selected>English</option>
-            <option value="Turkish">Туркӣ</option>
-            <option value="German">Олмонӣ</option>
-        </select>
-    </div>
+    <select id="lTo">
+        <option value="Tajik">Тоҷикӣ</option>
+        <option value="Russian">Русский</option>
+        <option value="English">English</option>
+    </select>
 
-    <div class="container">
-        <div class="card">
-            <textarea id="inputText" placeholder="Ин ҷо нависед ё микрофонро истифода баред..."></textarea>
-            <div class="actions">
-                <button class="btn-icon" id="micBtn" onclick="startMic()">🎤</button>
-            </div>
-        </div>
+    <button onclick="translateWithAI()">✨ ТАРҶУМА БО AI</button>
 
-        <button class="btn-main" onclick="translateWithAI()">✨ ТАРҶУМА БО AI</button>
+    <div id="result">Натиҷа дар ин ҷо пайдо мешавад...</div>
+</div>
 
-        <div class="card" style="background-color: #f8f9fa;">
-            <div class="output-box" id="outputText">Натиҷаи тарҷума...</div>
-            <div class="actions">
-                <button class="btn-icon" onclick="copyText()">📋</button>
-                <button class="btn-icon" onclick="playText()">🔊</button>
-            </div>
-        </div>
-    </div>
+<script>
+    // КАЛИДИ ХУДРО ДАР ИН ҶО ГУЗОРЕД (аз расми 45453.jpg)
+    const API_KEY = "AIzaSyBdJybQTGzr1L9SSrMFVOyNXoKtC7OPiIc"; 
 
-    <script>
-        // Калиди Gemini AI-и шумо
-        const API_KEY = "AIzaSyBdJybQTGzr1L9SSrMFVOyNXoKtC7OPiIc";
+    async function translateWithAI() {
+        const text = document.getElementById("inputText").value.trim();
+        const lFrom = document.getElementById("lFrom").value;
+        const lTo = document.getElementById("lTo").value;
+        const resultDiv = document.getElementById("result");
 
-        const input = document.getElementById('inputText');
-        const output = document.getElementById('outputText');
-        const lFrom = document.getElementById('langFrom');
-        const lTo = document.getElementById('langTo');
-        const micBtn = document.getElementById('micBtn');
-
-        // Иваз кардани забонҳо
-        function swapLanguages() {
-            const temp = lFrom.value;
-            lFrom.value = lTo.value;
-            lTo.value = temp;
-            input.value = "";
-            output.innerText = "Натиҷаи тарҷума...";
+        if (!text) {
+            resultDiv.innerText = "Лутфан матнро ворид кунед!";
+            return;
         }
 
-        // Тарҷума бо AI
-        async function translateWithAI() {
-            const text = input.value.trim();
-            if (!text) return;
+        resultDiv.innerText = "AI дар ҳоли кор... (VPN-ро санҷед)";
+        resultDiv.style.color = "black";
 
-            output.innerText = "AI фикр карда истодааст...";
-            output.style.color = "#888";
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: `Translate from ${lFrom} to ${lTo}: ${text}` }] }]
+                })
+            });
 
-            const prompt = `Translate this text from ${lFrom.value} to ${lTo.value}. Provide ONLY the translation without any explanations: "${text}"`;
+            const data = await response.json();
 
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
-                    })
-                });
-
-                const data = await response.json();
-                const result = data.candidates[0].content.parts[0].text;
-                
-                output.innerText = result.trim();
-                output.style.color = "var(--primary)";
-            } catch (error) {
-                output.innerText = "Хатогӣ дар пайвастшавӣ бо AI. Интернетро санҷед.";
-                output.style.color = "red";
+            if (data.error) {
+                // Агар калид хато бошад ё минтақа блок бошад
+                resultDiv.innerText = "Хатогии AI: " + data.error.message;
+                resultDiv.style.color = "red";
+            } else if (data.candidates && data.candidates[0].content.parts[0].text) {
+                resultDiv.innerText = data.candidates[0].content.parts[0].text;
+                resultDiv.style.color = "blue";
+            } else {
+                resultDiv.innerText = "Ҷавоб гирифта нашуд.";
             }
+
+        } catch (error) {
+            // Агар интернет ё VPN кор накунад
+            resultDiv.innerText = "Хатогии пайвастшавӣ! VPN-ро фаъол кунед ва саҳифаро нав кунед.";
+            resultDiv.style.color = "red";
         }
+    }
+</script>
 
-        // Микрофон (Овоз)
-        function startMic() {
-            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!Speech) return alert("Браузери шумо овозро дастгирӣ намекунад!");
-
-            const recognition = new Speech();
-            // Танзими забони гӯш кардан
-            const langMap = { 'Tajik': 'tg-TJ', 'Russian': 'ru-RU', 'English': 'en-US' };
-            recognition.lang = langMap[lFrom.value] || 'en-US';
-
-            recognition.onstart = () => micBtn.classList.add('recording');
-            recognition.onend = () => micBtn.classList.remove('recording');
-
-            recognition.onresult = (event) => {
-                input.value = event.results[0][0].transcript;
-                translateWithAI();
-            };
-
-            recognition.start();
-        }
-
-        // Нусхабардорӣ
-        function copyText() {
-            navigator.clipboard.writeText(output.innerText);
-            alert("Нусхабардорӣ шуд!");
-        }
-
-        // Хондани матн (Овоз)
-        function playText() {
-            const utterance = new SpeechSynthesisUtterance(output.innerText);
-            const langMap = { 'Russian': 'ru-RU', 'English': 'en-US', 'German': 'de-DE' };
-            utterance.lang = langMap[lTo.value] || 'en-US';
-            window.speechSynthesis.speak(utterance);
-        }
-    </script>
 </body>
 </html>
