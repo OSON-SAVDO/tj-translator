@@ -5,26 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Тарҷумон TJ</title>
     <style>
-        :root { --primary: #007bff; --bg: #f8f9fa; }
-        body { font-family: sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; width: 100%; max-width: 400px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        select, textarea { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        #result { margin-top: 15px; padding: 15px; background: #eee; border-radius: 8px; min-height: 50px; color: #333; }
+        :root { --primary: #007bff; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .card { background: white; width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        select, textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:active { transform: scale(0.98); }
+        #result { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; min-height: 60px; border-left: 5px solid var(--primary); font-size: 18px; color: #333; line-height: 1.5; }
+        .error-text { color: #dc3545; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2 style="text-align:center;">✨ AI Тарҷумон</h2>
+    <h2>✨ AI Тарҷумон v2.0</h2>
     
     <select id="lFrom">
-        <option value="English">English</option>
         <option value="Russian">Русский</option>
+        <option value="English">English</option>
         <option value="Tajik">Тоҷикӣ</option>
     </select>
 
-    <textarea id="inputText" rows="4" placeholder="Матнро нависед..."></textarea>
+    <textarea id="inputText" rows="4" placeholder="Матнро барои тарҷума ин ҷо нависед..."></textarea>
 
     <select id="lTo">
         <option value="Tajik">Тоҷикӣ</option>
@@ -32,19 +35,19 @@
         <option value="English">English</option>
     </select>
 
-    <button onclick="translateWithAI()">✨ ТАРҶУМА БО AI</button>
+    <button onclick="translateWithAI()">✨ ТАРҶУМА КУН</button>
 
     <div id="result">Натиҷа дар ин ҷо пайдо мешавад...</div>
 </div>
 
 <script>
-    // КАЛИДИ ХУДРО ДАР ИН ҶО ГУЗОРЕД (аз расми 45453.jpg)
+    // Калиди худро аз расми 45453.jpg дар ин ҷо гузоред
     const API_KEY = "AIzaSyBdJybQTGzr1L9SSrMFVOyNXoKtC7OPiIc"; 
 
     async function translateWithAI() {
         const text = document.getElementById("inputText").value.trim();
-        const lFrom = document.getElementById("lFrom").value;
-        const lTo = document.getElementById("lTo").value;
+        const fromLang = document.getElementById("lFrom").value;
+        const toLang = document.getElementById("lTo").value;
         const resultDiv = document.getElementById("result");
 
         if (!text) {
@@ -52,35 +55,33 @@
             return;
         }
 
-        resultDiv.innerText = "AI дар ҳоли кор... (VPN-ро санҷед)";
-        resultDiv.style.color = "black";
+        resultDiv.innerText = "AI дар ҳоли тарҷума... (VPN-ро фаъол кунед)";
+        resultDiv.classList.remove("error-text");
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+            // Ислоҳи версия аз v1beta ба v1 мувофиқи хатогии расми 45476.jpg
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Translate from ${lFrom} to ${lTo}: ${text}` }] }]
+                    contents: [{ parts: [{ text: `Тарҷума кун аз ${fromLang} ба ${toLang}: ${text}` }] }]
                 })
             });
 
             const data = await response.json();
 
             if (data.error) {
-                // Агар калид хато бошад ё минтақа блок бошад
-                resultDiv.innerText = "Хатогии AI: " + data.error.message;
-                resultDiv.style.color = "red";
+                // Нишон додани хатогии дақиқ аз сервер
+                resultDiv.innerHTML = `<span class="error-text">Хатогии AI:</span> ${data.error.message}`;
             } else if (data.candidates && data.candidates[0].content.parts[0].text) {
                 resultDiv.innerText = data.candidates[0].content.parts[0].text;
-                resultDiv.style.color = "blue";
             } else {
-                resultDiv.innerText = "Ҷавоб гирифта нашуд.";
+                resultDiv.innerText = "AI ҷавоб дода натавонист. Калидро санҷед.";
             }
 
         } catch (error) {
-            // Агар интернет ё VPN кор накунад
-            resultDiv.innerText = "Хатогии пайвастшавӣ! VPN-ро фаъол кунед ва саҳифаро нав кунед.";
-            resultDiv.style.color = "red";
+            // Агар пайвастшавӣ блок шуда бошад
+            resultDiv.innerHTML = `<span class="error-text">Хатогии пайвастшавӣ!</span> VPN-ро фаъол кунед ва саҳифаро нав кунед.`;
         }
     }
 </script>
